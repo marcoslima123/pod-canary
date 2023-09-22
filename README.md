@@ -1,34 +1,53 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
-First, run the development server:
+(obs: a instalação foi feita no wsl2)
+
+- Instalar as dependências
+- Abrir o docker
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+npm install 
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 1- Instalar o Kind
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+[ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+chmod +x ./kind
 
-## Learn More
+sudo mv ./kind /usr/local/bin/
 
-To learn more about Next.js, take a look at the following resources:
+kind --version
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 2- Criar o cluster com o kind
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Create - kind create cluster --config k8s/kind-config.yaml --name cluster-front
+- Use cluste - kubectl cluster-info --context kind-cluster-front
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 3- Configurar o istio
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Baixa o istioctl - curl -L https://istio.io/downloadIstio | sh -
+- Entre na pasta - cd istio-1.19.0
+- Exponha o path nas variaveis de ambiente ou use os arquivos .bashrc ou .bash_profile - export PATH=$PWD/bin:$PATH
+- Instale o istio no cluster - istioctl install --set profile=default
+- Ative o Sidecar injection - kubectl label namespace default istio-injection=enabled
+- Verifique se os CRDs (Custom Resource Definitions) - kubectl get crd | grep istio
+
+## 4- Docker
+
+- Build and push da imagem do docker
+- Alterar a versão ou a imagem dentro dos arquivos deployments
+
+## 5- Rodar o kubectl apply em todos os arquivos do diretório K8s
+
+- kubectl apply -f k8s/arquivo.yaml
+- kubectl get pods para verificar se os pods estão rodando e estão com o Sidecar (Coluna READY 2/2)
+
+## 6 Arquivo server.js
+
+Basicamente esse arquivo é um servidor express que possui a responsabilidade de definir uma rota custumizada para servir os arquivos estáticos de uma versão específica.
+
+Para rodar uma versão 1.0.0 ou 2.0.0 é necessario alterar os arquivos postbuild.sh, server.js e o next.config.js.
+Caso queria rodar uma versão diferente dessas é preciso alterar também nos arquivos de deployments.

@@ -10,23 +10,17 @@ npm install
 npm run build
 ```
 
-## 1- Instalar o Kind
+## 1 - Instalar o k3d
 
-[ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+- wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+- k3d version
 
-chmod +x ./kind
+## 2- Criar o cluster com o k3d
 
-sudo mv ./kind /usr/local/bin/
-
-kind --version
-
-## 2- Criar o cluster com o kind
-
-- Create - kind create cluster --config k8s/kind-config.yaml --name cluster-front
-- Use cluste - kubectl cluster-info --context kind-cluster-front
+- k3d cluster create -p "8000:30000@loadbalancer" --agents 2
 
 
-## 3- Configurar o istio
+## 3 - Configurar o istio
 
 - Baixa o istioctl - curl -L https://istio.io/downloadIstio | sh -
 - Entre na pasta - cd istio-1.19.0
@@ -35,19 +29,35 @@ kind --version
 - Ative o Sidecar injection - kubectl label namespace default istio-injection=enabled
 - Verifique se os CRDs (Custom Resource Definitions) - kubectl get crd | grep istio
 
-## 4- Docker
+## 4 - Docker
 
 - Build and push da imagem do docker
+  - docker build --build-arg NEXT_PUBLIC_STATIC_VERSION=(stable ou canary) -t (usuario docker/imagem com a versão) .
+
 - Alterar a versão ou a imagem dentro dos arquivos deployments
 
-## 5- Rodar o kubectl apply em todos os arquivos do diretório K8s
+## 5 - Instalar o Helm (opcional)
+
+- curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+- chmod 700 get_helm.sh
+- ./get_helm.sh
+- helm install deploy-canary ./chart --set staticVersion=stable (Na raiz do projeto)
+
+## 6 - Caso prefira usar o kube, copie os arquivos do diretório chart/templates e cole no diretório k8s
+- Obs: substituir os valores das variáveis ( .Values.canaryVersionStaticFiles e .Values.stableVersionStaticFiles) no arquivos de deployments.
+- Valores: canary e stable
 
 - kubectl apply -f k8s/arquivo.yaml
 - kubectl get pods para verificar se os pods estão rodando e estão com o Sidecar (Coluna READY 2/2)
 
-## 6 Arquivo server.js
+## 7 - Arquivo server.js
 
 Basicamente esse arquivo é um servidor express que possui a responsabilidade de definir uma rota custumizada para servir os arquivos estáticos de uma versão específica.
 
 Para rodar uma versão 1.0.0 ou 2.0.0 é necessario alterar os arquivos postbuild.sh, server.js e o next.config.js.
 Caso queria rodar uma versão diferente dessas é preciso alterar também nos arquivos de deployments.
+
+## 8 - É possível validar o funcionamento através do Kiali
+
+- kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
+- istioctl dashboard kiali

@@ -14,9 +14,16 @@
 # # Procura e substitui caminhos em arquivos gerados
 # find $NEXT_BUILD_DIR -type f -exec sed -i -e "s|/_next/static/|/_next/$VERSION/static/|g" -e "s|static/css/|$VERSION/static/css/|g" -e "s|static/chucks/|/$VERSION/static/chucks|g" -e "s|static/chucks/pages|/$VERSION/static/chucks/pages|g" {} \;
 
-mkdir 2.0.0
-mv .next 2.0.0/
 
-chmod -R 755 2.0.0/.next
+if [ -z "$NEXT_PUBLIC_STATIC_VERSION" ]; then
+    echo "POD_VERSION não está definida."
+    exit 1
+else
+    mkdir $NEXT_PUBLIC_STATIC_VERSION
+    mv .next $NEXT_PUBLIC_STATIC_VERSION/
 
-ln -s 2.0.0/.next .next
+    chmod -R 755 $NEXT_PUBLIC_STATIC_VERSION/.next
+
+    ln -s $NEXT_PUBLIC_STATIC_VERSION/.next .next
+    # Você pode usar $POD_VERSION em qualquer lugar do script agora
+fi

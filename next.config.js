@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  assetPrefix: '/2.0.0'
+  basePath: '/cadastro',
+  assetPrefix: `/cadastro/${process.env.NEXT_PUBLIC_STATIC_VERSION}/`
 }
 
 module.exports = nextConfig

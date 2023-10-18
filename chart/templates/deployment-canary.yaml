@@ -1,23 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-x
+  name: deployment-canary
 spec:
   selector:
     matchLabels:
       app: appfront
-      conteudo: x
   template:
     metadata:
       labels:
         app: appfront
-        conteudo: x
-        version: "1.0.0"
+        version: {{ .Values.canaryVersionStaticFiles }}
     spec:
       containers:
-      - name: next-front-x
-        image: 300150/next-front:v17
+      - name: next-front
+        image: 300150/next-front:v43
+        ports:
+        - containerPort: 3000
         env:
+        - name: NEXT_PUBLIC_STATIC_VERSION
+          value: canary
         - name: NEXT_PUBLIC_POD_NAME
           valueFrom:
             fieldRef:

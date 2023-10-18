@@ -9,8 +9,8 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = express();
 
-  server.get('/2.0.0/_next/static/:path(*)', (req, res) => {
-    const actualPath = path.join(__dirname, '2.0.0', '.next', 'static', req.params.path);
+  server.get(`/cadastro/${process.env.NEXT_PUBLIC_STATIC_VERSION}/_next/static/:path(*)`, (req, res) => {
+    const actualPath = path.join(__dirname, '.next', 'static', req.params.path);
     console.log("Attempting to serve:", actualPath);
     res.sendFile(actualPath);
   });

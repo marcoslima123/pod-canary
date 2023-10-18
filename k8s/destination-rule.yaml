@@ -3,11 +3,11 @@ kind: DestinationRule
 metadata:
   name: dr-appfront
 spec:
-  host: front-service.default.svc.cluster.local
+  host: front-service
   subsets:
   - name: v1
     labels:
-      version: 1.0.0
+      version: canary
   - name: v2
     labels:
-      version: 2.0.0
+      version: stable

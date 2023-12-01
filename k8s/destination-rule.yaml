@@ -5,9 +5,9 @@ metadata:
 spec:
   host: front-service
   subsets:
-  - name: v1
-    labels:
-      version: canary
-  - name: v2
-    labels:
+  - labels:
       version: stable
+    name: stable
+  - labels:
+      version: canary
+    name: canary

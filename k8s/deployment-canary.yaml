@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: deployment-canary
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: appfront
@@ -25,3 +25,15 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+      # - name: nginx
+      #   image: nginx:latest
+      #   ports:
+      #   - containerPort: 80
+      #   volumeMounts:
+      #   - name: config-volume
+      #     mountPath: /etc/nginx/nginx.conf
+      #     subPath: nginx.conf
+      # volumes:
+      # - name: config-volume
+      #   configMap:
+      #     name: nginx-config

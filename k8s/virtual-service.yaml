@@ -8,17 +8,16 @@ spec:
   gateways:
   - ingress-gateway-k3s
   http:
-  - match:
-    - uri:
-        prefix: /canary/
-    route:
+  - route:
     - destination:
         host: front-service
-        subset: v1
-  - match:
-    - uri:
-        prefix: /stable/
-    route:
+        subset: stable
+        port:
+          number: 8000
+      weight: 50
     - destination:
         host: front-service
-        subset: v2
+        subset: canary
+        port:
+          number: 8000
+      weight: 50

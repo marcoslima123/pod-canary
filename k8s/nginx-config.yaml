@@ -33,8 +33,8 @@ data:
 
             location / {
                 root   /usr/share/nginx/html;
-                index  index.html index.htm;
-                add_header x-user-session $cookie_userSessionId;
+                index  index.html index.html;
+                add_header x-user $cookie_userSessionId;
             }
         }
     }

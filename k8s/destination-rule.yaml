@@ -4,6 +4,10 @@ metadata:
   name: dr-appfront
 spec:
   host: front-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: "x-user"
   subsets:
   - labels:
       version: stable

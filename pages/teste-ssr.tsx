@@ -1,12 +1,13 @@
 import Image from 'next/image'
-import '../app/globals.css'
+import '../app/globals.css' 
 
 interface nomeDoPodProps {
   nomeDoPod: string
   version: string
+  todos: Array<{ id: string, title:string }>
 }
 
-export default function Home({ nomeDoPod, version }: nomeDoPodProps) {
+export default function Home({ nomeDoPod, version, todos }: nomeDoPodProps) {
 
   return (
     <>
@@ -115,6 +116,14 @@ export default function Home({ nomeDoPod, version }: nomeDoPodProps) {
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
         </a>
+
+        <ul>
+          {todos.map((todo) => (
+            <li key={todo.id}>
+              {todo.id} - {todo.title}
+            </li>
+          ))}
+        </ul>
       </div>
     </>
   )
@@ -124,10 +133,15 @@ export async function getServerSideProps() {
   const nomeDoPod = process.env.NEXT_PUBLIC_POD_NAME || "Valor padrão";
   const version = process.env.NEXT_PUBLIC_STATIC_VERSION;
 
+  const data = await fetch('https://jsonplaceholder.typicode.com/todos')
+
+  const todos = await data.json()
+
   return {
     props: {
       nomeDoPod,
-      version
+      version,
+      todos
     }
   };
 }

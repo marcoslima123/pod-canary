@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: deployment-stable
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: appfront
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: next-front
-        image: 300150/next-front:v49
+        image: 300150/next-front:v51
         ports:
         - containerPort: 3000
         env:
@@ -25,15 +25,3 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-      # - name: nginx
-      #   image: nginx:latest
-      #   ports:
-      #   - containerPort: 80
-      #   volumeMounts:
-      #   - name: config-volume
-      #     mountPath: /etc/nginx/nginx.conf
-      #     subPath: nginx.conf
-      # volumes:
-      # - name: config-volume
-      #   configMap:
-      #     name: nginx-config
